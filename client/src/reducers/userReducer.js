@@ -40,7 +40,7 @@ export const logoutUser = () => {
 
 export const loginUser = (username, password) => {
   return async (dispatch) => {
-    dispatch(setNotification(`Logged in (not quite there yet) with ${username}, ${password}`, 5));
+    dispatch(setNotification(`Logged in (not quite (my branch >:)) yet) with ${username}, ${password}`, 5));
     /*try {
       const user = await loginService.login({
         username,
