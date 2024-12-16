@@ -1,7 +1,7 @@
-const ListEntry = ({title, path}) => {
+const ListEntry = ({author, description}) => {
 
     return(
-        <p>{title} ({path})</p>
+        <p>{author} ({description})</p>
     )
 }
 

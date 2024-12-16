@@ -1,32 +1,31 @@
-import ListEntry from "./components/ListEntry"
+import { useDispatch } from "react-redux"
+import EntryList from "./components/EntryList"
 import LoginForm from "./components/LoginForm"
 import Notification from "./components/Notification"
+import { createEntry, initializeEntries } from "./reducers/entryReducer"
+import { useEffect } from "react"
+import EntryForm from "./components/EntryForm"
 
-const baseData = [
-  {
-    title : "Ekin moniste 1",
-    path : "test1",
-    id: 1
-  },
-  {
-    title : "Latvalan kauhu",
-    path : "test2",
-    id : 2
-  },
-  {
-    title : "Sepin vastaisku",
-    path : "test3",
-    id : 3
+
+
+const App = () => {
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(initializeEntries());
+  }, []);
+
+  const createNewEntry = async (newEntry) => {
+    dispatch(createEntry(newEntry))
   }
-]
-
-function App() {
 
   return (
     <div>
       <Notification/>
       <h1>Excuse Me Soundboard (coming soon)</h1>
-      {baseData.map(x => (<ListEntry key = {x.id} title = {x.title} path={x.path}/>))}
+      <EntryList/>
+      <EntryForm createEntry={createNewEntry}/>
       <LoginForm/>
     </div>
   )
