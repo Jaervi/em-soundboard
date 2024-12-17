@@ -4,18 +4,21 @@ const baseData = [
     {
       author : "Ekin moniste 1",
       description : "test1",
+      audio : "/sounds/babypark.mp3",
       id: "56c1a96d-76c2-4ebb-b971-969ad9d0eacb"
 
     },
     {
       author : "Latvalan kauhu",
       description : "test2",
+      audio : "/sounds/babypark.mp3",
       id : "51a22db8-9364-4cf6-8785-46c6ca81c2d2"
 
     },
     {
       author : "Sepin vastaisku",
       description : "test3",
+      audio : "/sounds/finlandia.mp3",
       id : "bd2d32e3-9be1-4938-88f9-4c98cf243626"
     }
   ]

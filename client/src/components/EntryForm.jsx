@@ -1,15 +1,31 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const EntryForm = ({createEntry}) => {
 
     const [author, setAuthor] = useState("")
     const [description, setDescription] = useState("")
+    const [audioURL, setAudioURL] = useState(null)
+
+    const fileInputRef = useRef(null);
 
     const addEntry = (event) => {
         event.preventDefault()
-        createEntry({author,description})
+        createEntry({author,description, audio : audioURL})
         setAuthor("")
         setDescription("")
+        setAudioURL(null)
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+    }
+
+    const handleFileChange = (event) => {
+      const file = event.target.files[0]
+      if (file && file.type.startsWith("audio/")){
+        const url = URL.createObjectURL(file);
+        setAudioURL(url);
+      }
     }
 
 
@@ -34,6 +50,9 @@ const EntryForm = ({createEntry}) => {
               name="Password"
               onChange={({ target }) => setDescription(target.value)}
             />
+          </div>
+          <div>
+            <input type="file" accept="audio/*" onChange={handleFileChange} ref={fileInputRef} />  
           </div>
           <button type="submit">Add</button>
         </form>

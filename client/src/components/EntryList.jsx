@@ -8,7 +8,7 @@ const EntryList = () => {
 
     return (
       <div>
-        {entries.map(x => (<ListEntry key = {x.id} author = {x.author} description={x.description}/>))}
+        {entries.map(x => (<ListEntry key = {x.id} author = {x.author} description={x.description} audio={x.audio}/>))}
       </div>
     );
   }
