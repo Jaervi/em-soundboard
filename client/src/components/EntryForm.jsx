@@ -1,16 +1,22 @@
 import { useState, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { createEntry } from "../reducers/entryReducer";
 
-const EntryForm = ({createEntry}) => {
+const EntryForm = () => {
 
     const [author, setAuthor] = useState("")
     const [description, setDescription] = useState("")
     const [audioURL, setAudioURL] = useState(null)
+    const tempAudio = "/sounds/finlandia.mp3"
 
+    
     const fileInputRef = useRef(null);
+    const dispatch = useDispatch()
+
 
     const addEntry = (event) => {
         event.preventDefault()
-        createEntry({author,description, audio : audioURL})
+        dispatch(createEntry({author,description, audio : tempAudio}))
         setAuthor("")
         setDescription("")
         setAudioURL(null)
@@ -20,11 +26,13 @@ const EntryForm = ({createEntry}) => {
         }
     }
 
+
     const handleFileChange = (event) => {
       const file = event.target.files[0]
       if (file && file.type.startsWith("audio/")){
         const url = URL.createObjectURL(file);
         setAudioURL(url);
+        console.log(`Audio url (not used rn) is ${audioURL}`)
       }
     }
 

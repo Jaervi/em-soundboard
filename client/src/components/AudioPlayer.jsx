@@ -9,7 +9,7 @@ const AudioPlayer = ({audioName}) =>{
 
   useEffect(() => {
     const newSound = new Howl({
-      src: [`/sounds/${audioName}.mp3`],
+      src: [audioName],
       html5: true,
       onend: () => {
         // Automatically set state to not playing when the sound ends
