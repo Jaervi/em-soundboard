@@ -12,7 +12,7 @@ const notificationSlice = createSlice({
 
 export const { changeMessage } = notificationSlice.actions;
 
-export const setNotification = (message, time) => {
+export const setNotification = (message, time = 5) => {
   return async (dispatch) => {
     dispatch(changeMessage(message));
     setTimeout(() => {

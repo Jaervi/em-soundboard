@@ -8,14 +8,14 @@ const ListEntry = ({id, author, description, audio}) => {
 
     const removeEntry = (event) => {
         event.preventDefault()
-        dispatch(deleteEntry(id))
+        dispatch(deleteEntry({id,audio}))
       }
 
     return(
         <div>
         <p>{author} ({description})</p>
         <AudioPlayer audioName={audio}/>
-        <button onClick={removeEntry}>Delete {id}</button>
+        <button onClick={removeEntry}>Delete the entry</button>
         </div>
     )
 }

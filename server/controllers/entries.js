@@ -37,7 +37,7 @@ router.put('/:id', async (request, response) => {
   const entry = {
     author: body.author,
     description: body.description,
-    url: body.url,
+    audio: body.audio,
   }
 
   const updatedEntry = await updatedEntry.findByIdAndUpdate(request.params.id, entry, { new: true })

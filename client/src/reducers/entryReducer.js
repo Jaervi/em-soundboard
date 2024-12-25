@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import entryService from "../services/entries"
+import fileService from "../services/files"
+import { setNotification } from "./notificationReducer";
+
 
 
 const entrySlice = createSlice({
@@ -33,15 +36,35 @@ export const createEntry = (content) => {
     return async (dispatch) => {
       /*const newBlog = await blogService.create(content);
       newBlog.user = user;*/
-      const newEntry = await entryService.create(content)
-      dispatch(appendEntry(newEntry));
-    };
-  };
 
-  export const deleteEntry = (id) => {
+      
+      //Send file to S3
+      dispatch(setNotification(`Sending file to the cloud...`),10)
+      const key = await fileService.uploadFile(content.file)
+      
+      //Send text data to MongoDB
+      dispatch(setNotification(`Updating the database...`),10)
+      const newEntry = await entryService.create({
+        author : content.author, 
+        description : content.description,
+        audio : key
+        })
+      dispatch(appendEntry(newEntry))
+      dispatch(setNotification(`${content.description} uploaded successfully!`))
+    }
+  }
+
+  export const deleteEntry = (entry) => {
     return async (dispatch) => {
-      await entryService.remove(id);
-      dispatch(removeEntry(id));
+      
+      //Remove file from S3
+      await fileService.removeFile(entry.audio)
+
+      //Remove text data from MongoDB
+      await entryService.remove(entry.id)
+
+      //Remove data from session storage
+      dispatch(removeEntry(entry.id))
     };
   };
 

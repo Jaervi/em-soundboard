@@ -6,35 +6,28 @@ const EntryForm = () => {
 
     const [author, setAuthor] = useState("")
     const [description, setDescription] = useState("")
-    const [audioURL, setAudioURL] = useState(null)
-    const tempAudio = "/sounds/finlandia.mp3"
+    const [file, setFile] = useState(null)
 
     
     const fileInputRef = useRef(null);
     const dispatch = useDispatch()
-
+    
+    const handleFileChange = (event) => {
+      setFile(event.target.files[0])
+    }
 
     const addEntry = (event) => {
         event.preventDefault()
-        dispatch(createEntry({author,description, audio : tempAudio}))
+        dispatch(createEntry({ author, description, file }))
         setAuthor("")
         setDescription("")
-        setAudioURL(null)
+        setFile(null)
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
     }
 
-
-    const handleFileChange = (event) => {
-      const file = event.target.files[0]
-      if (file && file.type.startsWith("audio/")){
-        const url = URL.createObjectURL(file);
-        setAudioURL(url);
-        console.log(`Audio url (not used rn) is ${audioURL}`)
-      }
-    }
 
 
     return(
