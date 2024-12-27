@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-
+const config = require('../utils/config')
 const User = require('../models/user')
 
 const requestLogger = (request, response, next) => {
@@ -28,35 +28,35 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get("authorization")
+  
+  if (authorization && authorization.startsWith("Bearer ")) {
+    request.token = authorization.replace("Bearer ", "")
+  } else {
+    request.token = null
   }
-  return null
+  next()
 }
 
-const userExtractor = async (request, response, next) => {
-  const token = getTokenFrom(request)
+const userExtractor = (request, response, next) => {
+  const token = request.token
+  console.log(`Token is: ${token}`)
+  if (token) {
+    const decodedToken = jwt.verify(token, config.JWT_SECRET)
+    console.log(decodedToken)
 
-  if (!token) {
-    return response.status(401).json({ error: 'token missimg' })
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: "token invalid" })
+    }
+    User.findById(decodedToken.id).then((result) => {
+      request.user = result
+      next()
+    })
+  } else {
+    request.user = null
+    next()
   }
-
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-
-  const user = await User.findById(decodedToken.id)
-
-  if (!user) {
-    return response.status(401).json({ error: 'user not found' })
-  }
-
-  request.user = user
-
-  next()
 }
 
 module.exports = {
@@ -64,4 +64,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   userExtractor,
+  tokenExtractor
 }

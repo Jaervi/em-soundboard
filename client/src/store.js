@@ -8,7 +8,7 @@ import entryReducer from "./reducers/entryReducer"
 const store = configureStore({
     reducer: {
         notificationText: notificationReducer,
-        user: userReducer,
+        userData: userReducer,
         entries: entryReducer,
     },
   });
