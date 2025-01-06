@@ -1,10 +1,7 @@
-# Excuse Me -Soundboard
-Based on the record-selling hit series "Excuse Me", only on exclusive playlists you probably can't see :)
+# EM-Soundboard
+A soundboard web app which stores and plays files via a web interface.
 
-WORK IN PROGRESS..
+Built with the [MERN](https://www.mongodb.com/resources/languages/mern-stack) stack
 
-## Current objectives
-  - A website to serve as the user interface
-  - Ability to upload and listen to sound files
-  - API to handle file requests
-  - More...
+Still a work in progress but main functionalities are working...
+
