@@ -9,7 +9,7 @@ const Notification = () => {
     border: "solid",
     padding: 10,
     borderWidth: 1,
-    color: "green"
+    color: "green",
   };
   if (notification !== "") {
     return <div style={style}>{notification}</div>;

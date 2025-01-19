@@ -1,64 +1,66 @@
 import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { createEntry } from "../reducers/entryReducer";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 const EntryForm = () => {
+  const [author, setAuthor] = useState("");
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState(null);
 
-    const [author, setAuthor] = useState("")
-    const [description, setDescription] = useState("")
-    const [file, setFile] = useState(null)
+  const fileInputRef = useRef(null);
+  const dispatch = useDispatch();
 
-    
-    const fileInputRef = useRef(null);
-    const dispatch = useDispatch()
-    
-    const handleFileChange = (event) => {
-      setFile(event.target.files[0])
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const addEntry = (event) => {
+    event.preventDefault();
+    dispatch(createEntry({ author, description, file }));
+    setAuthor("");
+    setDescription("");
+    setFile(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
+  };
 
-    const addEntry = (event) => {
-        event.preventDefault()
-        dispatch(createEntry({ author, description, file }))
-        setAuthor("")
-        setDescription("")
-        setFile(null)
+  return (
+    <div>
+      <h2>Add entry</h2>
+      <Form onSubmit={addEntry} style={{ width: "18rem" }}>
+        <Form.Group className="mb-2" controlId="formAuthor">
+          <Form.Label>Author</Form.Label>
+          <Form.Control
+            type="text"
+            value={author}
+            onChange={({ target }) => setAuthor(target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formDescription">
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            type="text"
+            value={description}
+            onChange={({ target }) => setDescription(target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formFile" style={{width: '24rem'}}>
+          <Form.Label>Audio file</Form.Label>
+          <Form.Control
+            type="file"
+            accept="audio/*"
+            onChange={handleFileChange}
+            ref={fileInputRef}
+          />
+        </Form.Group>
+        <Button variant='success' type="submit">Add entry</Button>
+      </Form>
+    </div>
+  );
+};
 
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-    }
-
-
-
-    return(
-        <div>
-        <h2>Add entry</h2>
-        <form onSubmit={addEntry}>
-          <div>
-            Author:
-            <input
-              type="text"
-              value={author}
-              name="Author"
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </div>
-          <div>
-            Description:
-            <input
-              type="text"
-              value={description}
-              name="Password"
-              onChange={({ target }) => setDescription(target.value)}
-            />
-          </div>
-          <div>
-            <input type="file" accept="audio/*" onChange={handleFileChange} ref={fileInputRef} />  
-          </div>
-          <button type="submit">Add</button>
-        </form>
-        </div>
-    )
-}
-
-export default EntryForm
+export default EntryForm;
