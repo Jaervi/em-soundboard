@@ -26,14 +26,9 @@ const App = () => {
   const Home = () => {
     return (
       <div>
-        <EntryList />
+        {user && <EntryList />}
         {user && <EntryForm />}
         <LoginForm />
-        {user?.admin && (
-          <div>
-            <UserList />
-          </div>
-        )}
       </div>
     )
   }
@@ -48,7 +43,7 @@ const App = () => {
       <h1>Excuse Me Soundboard (coming soon)</h1>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/users" element={<div>implement users</div>}/>
+        <Route path="/users" element={<UserList />}/>
         <Route path="/entries" element={<div>implement entries</div>} />
       </Routes>
     </div>

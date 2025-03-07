@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { removeUser, promoteUser, createUser } from "../reducers/userReducer";
 import { useState } from "react";
 
-const User = ({ user, deleteFunc, promoteFunc }) => {
+const User = ({ user, deleteFunc, promoteFunc, currentUser }) => {
   const deleteUser = (event) => {
     event.preventDefault();
     deleteFunc(user.username);
@@ -16,8 +16,12 @@ const User = ({ user, deleteFunc, promoteFunc }) => {
       <p>
         {user.name} ({user.username}) Admin: {user.admin.toString()}
       </p>
-      <button onClick={deleteUser}> Delete user </button>
-      <button onClick={promoteUser}> Make admin </button>
+      {currentUser?.admin &&
+        <div>
+          <button onClick={deleteUser}> Delete user </button>
+          <button onClick={promoteUser}> Make admin </button>
+        </div>
+      }
     </div>
   );
 };
@@ -74,7 +78,7 @@ const UserForm = () => {
   );
 };
 
-const UserList = () => {
+const UserList = ({ user }) => {
   const dispatch = useDispatch();
 
   const users = useSelector(({ userData }) => {
@@ -93,16 +97,24 @@ const UserList = () => {
   };
   return (
     <div>
-      <h2>List of users</h2>
-      {users.map((user) => (
-        <User
-          key={user.id}
-          user={user}
-          deleteFunc={deleteUser}
-          promoteFunc={elevateUser}
-        />
-      ))}
-      <UserForm />
+      {currentUser ?
+      <div>
+        <h2>List of users</h2>
+        {users.map((user) => (
+          <User
+            key={user.id}
+            user={user}
+            deleteFunc={deleteUser}
+            promoteFunc={elevateUser}
+            currentUser={currentUser}
+          />
+        ))}
+        {currentUser?.admin &&
+          <UserForm />
+        }
+      </div>
+      :
+      <p>Log in to view users</p>}
     </div>
   );
 };
