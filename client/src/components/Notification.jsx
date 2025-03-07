@@ -1,18 +1,16 @@
 import { useSelector } from "react-redux";
+import Alert from 'react-bootstrap/Alert';
 
 const Notification = () => {
-  const notification = useSelector(({ notificationText }) => {
+  const { notification, variant } = useSelector(({ notificationText }) => {
     return notificationText;
   });
 
-  const style = {
-    border: "solid",
-    padding: 10,
-    borderWidth: 1,
-    color: "green",
-  };
   if (notification !== "") {
-    return <div style={style}>{notification}</div>;
+    console.log(notification);
+    return (
+      <Alert key={variant} variant={variant}>{notification}</Alert>
+    );
   } else {
     return;
   }

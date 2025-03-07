@@ -36,18 +36,18 @@ export const createEntry = (content) => {
       newBlog.user = user;*/
 
     //Send file to S3
-    dispatch(setNotification(`Sending file to the cloud...`), 10);
+    dispatch(setNotification(`Sending file to the cloud...`), "success", 10);
     const key = await fileService.uploadFile(content.file);
 
     //Send text data to MongoDB
-    dispatch(setNotification(`Updating the database...`), 10);
+    dispatch(setNotification(`Updating the database...`), "success", 10);
     const newEntry = await entryService.create({
       author: content.author,
       description: content.description,
       audio: key,
     });
     dispatch(appendEntry(newEntry));
-    dispatch(setNotification(`${content.description} uploaded successfully!`));
+    dispatch(setNotification(`${content.description} uploaded successfully!`, "success"));
   };
 };
 

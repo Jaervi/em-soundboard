@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = { notification: "", variant: "success" };
+
 const notificationSlice = createSlice({
   name: "notificationText",
-  initialState: "",
+  initialState,
   reducers: {
     changeMessage(state, action) {
+      console.log(action.payload);
       return action.payload;
     },
   },
@@ -12,11 +15,11 @@ const notificationSlice = createSlice({
 
 export const { changeMessage } = notificationSlice.actions;
 
-export const setNotification = (message, time = 5) => {
+export const setNotification = (message, variant, time = 5) => {
   return async (dispatch) => {
-    dispatch(changeMessage(message));
+    dispatch(changeMessage({ notification: message, variant }));
     setTimeout(() => {
-      dispatch(changeMessage(""));
+      dispatch(changeMessage(initialState));
     }, time * 1000);
   };
 };

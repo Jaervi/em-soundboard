@@ -26,9 +26,17 @@ const App = () => {
   const Home = () => {
     return (
       <div>
-        {user && <EntryList />}
-        {user && <EntryForm />}
         <LoginForm />
+        {user && <p>Home stuff coming here</p>}
+      </div>
+    )
+  }
+
+  const Entries = () => {
+    return (
+      <div>
+        <EntryList />
+        <EntryForm />
       </div>
     )
   }
@@ -44,7 +52,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<UserList />}/>
-        <Route path="/entries" element={<div>implement entries</div>} />
+        <Route path="/entries" element={user && <Entries/>} />
       </Routes>
     </div>
   );

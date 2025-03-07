@@ -47,12 +47,12 @@ export const loginUser = (username, password) => {
       dispatch(changeUser(user));
       entryService.setToken(user.token);
       //console.log("User changed to:", user);
-      dispatch(setNotification(`Logged in with ${user.username}`, 5));
+      dispatch(setNotification(`Logged in with ${user.username}`, "success", 5));
     } catch (error) {
       if (error.response.status === 404) {
-        dispatch(setNotification("Can't find login information", 5));
+        dispatch(setNotification("Can't find login information", "danger" , 5));
       } else {
-        dispatch(setNotification("Wrong credentials", 5));
+        dispatch(setNotification("Wrong credentials", "danger", 5));
       }
     }
   };
@@ -100,7 +100,7 @@ export const removeUser = (username, user) => {
       await userService.remove(username, user);
       dispatch(removeUserFromList(username));
     } catch (error) {
-      dispatch(setNotification(error.response.data.error), 5);
+      dispatch(setNotification(error.response.data.error, "danger", 5));
     }
   };
 };
@@ -119,7 +119,7 @@ export const promoteUser = (username, user) => {
       const updatedUser = await userService.promoteUser(username, user);
       dispatch(replaceUserInList(updatedUser));
     } catch (error) {
-      dispatch(setNotification(error.response.data.error), 5);
+      dispatch(setNotification(error.response.data.error, "danger", 5));
     }
   };
 };
