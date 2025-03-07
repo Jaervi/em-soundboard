@@ -11,12 +11,13 @@ const Navigation = () => {
   const user = useSelector(({ userData }) => {
     return userData.user;
   });
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLogout = (event) => {
     event.preventDefault();
     dispatch(logoutUser());
+    navigate('/');
   };
 
   return (
@@ -32,13 +33,17 @@ const Navigation = () => {
             <Nav.Link href="/users" >Users </Nav.Link>
             <Nav.Link href="/entries" >Entries </Nav.Link>
           </Nav>
-          {user && 
+          {user ?
             <div>
               <Navbar.Text className='pe-2'>
                 Logged in with {user.username} ({user.name})
               </Navbar.Text>
               <Button variant='info' onClick={handleLogout}>Log out</Button>
             </div>
+            :
+            <Nav>
+              <Nav.Link href="/" >Login </Nav.Link>
+            </Nav>
           }
           <Form className="d-flex ps-3">
             <Form.Control
