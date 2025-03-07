@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { loginUser, logoutUser } from "../reducers/userReducer";
+import { loginUser } from "../reducers/userReducer";
 import { useSelector } from "react-redux";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -20,21 +20,10 @@ const LoginForm = () => {
     setUsername("");
     setPassword("");
   };
-  const handleLogout = (event) => {
-    event.preventDefault();
-    dispatch(logoutUser());
-  };
 
   return (
     <div>
-      {user ? (
-        <div>
-          <h2>
-            Logged in with {user.username} ({user.name})
-          </h2>
-          <Button variant='info' onClick={handleLogout}>Log out</Button>
-        </div>
-      ) : (
+      {!user && 
         <div>
           <h2>Log in for additional functionality</h2>
           <Form onSubmit={handleLogin} value={username} style={{width: '18rem'}}>
@@ -59,7 +48,7 @@ const LoginForm = () => {
             <Button type="submit">login</Button>
           </Form>
         </div>
-      )}
+      }
     </div>
   );
 };
