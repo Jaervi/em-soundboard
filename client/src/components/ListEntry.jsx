@@ -42,7 +42,7 @@ const ListEntry = ({ id, author, description, audio, user = {username: "unknown"
         <Card.Text>{description}</Card.Text>
         <Card.Text>Posted by {user.username}</Card.Text>
       <AudioPlayer audioName={audio} />
-      {currentUser.username === user.username && <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>}
+      {(currentUser.username === user.username || currentUser.admin) && <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>}
       </Card.Body>
     </Card>
   );

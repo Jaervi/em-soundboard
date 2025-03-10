@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 
 const Entry = require("../models/entry");
+const User = require("../models/user");
 
 router.get("/", async (request, response) => {
   const entries = await Entry.find({}).populate('user', {username: 1, name: 1, admin: 1});
@@ -30,7 +31,7 @@ router.post("/", async (request, response) => {
 });
 
 router.delete("/:id", async (request, response) => {
-  const user = request.user;
+  let user = request.user;
 
   console.log(`Removing with id ${request.params.id}`);
   const entry = await Entry.findById(request.params.id);
@@ -38,12 +39,16 @@ router.delete("/:id", async (request, response) => {
     return response.status(204).end();
   }
 
-  if ( user.id.toString() !== entry.user.toString() ) {
+  if ( user.id.toString() !== entry.user.toString() && !user.admin ) {
     return response.status(403).json({ error: 'user not authorized' })
   }
 
   await entry.deleteOne();
 
+  if (user.id.toString() !== entry.user.toString() && user.admin) {
+    user = await User.findById(entry.user.toString());
+  }
+  console.log(`From user ${user.username} with id ${entry.user.toString()}`);
   user.entries = user.entries.filter(x => x._id.toString() !== entry._id.toString());
   await user.save()
 
