@@ -29,7 +29,7 @@ app.use(express.json());
 
 app.use("/api/users", middleware.userExtractor, usersRouter);
 app.use("/api/login", loginRouter);
-app.use("/api/entries", entryRouter);
+app.use("/api/entries", middleware.userExtractor, entryRouter);
 app.use("/api/files", fileRouter);
 
 module.exports = app;

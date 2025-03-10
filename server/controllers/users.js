@@ -4,7 +4,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
 usersRouter.get("/", async (request, response) => {
-  const users = await User.find({});
+  const users = await User.find({}).populate('entries', {author: 1, description: 1, audio: 1});
   response.json(users);
 });
 
@@ -36,6 +36,7 @@ usersRouter.post("/", async (request, response) => {
     name,
     passwordHash,
     admin: false,
+    entries: []
   });
 
   const savedUser = await user.save();

@@ -4,6 +4,10 @@ const schema = mongoose.Schema({
   author: String,
   description: String,
   audio: String,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 });
 
 schema.set("toJSON", {

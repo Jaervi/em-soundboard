@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema({
   name: String,
   admin: Boolean,
   passwordHash: String,
+  entries: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Entry'
+    }
+  ]
 });
 
 userSchema.set("toJSON", {
