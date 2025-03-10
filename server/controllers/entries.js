@@ -62,6 +62,7 @@ router.put("/:id", async (request, response) => {
     author: body.author,
     description: body.description,
     audio: body.audio,
+    tags: body.tags,
     user: body.user
   };
 

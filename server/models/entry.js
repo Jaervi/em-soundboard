@@ -4,6 +4,11 @@ const schema = mongoose.Schema({
   author: String,
   description: String,
   audio: String,
+  tags: [
+    {
+      type: String
+    }
+  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

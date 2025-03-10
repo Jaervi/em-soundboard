@@ -45,6 +45,7 @@ export const createEntry = (content) => {
       author: content.author,
       description: content.description,
       audio: key,
+      tags: content.tags
     });
     dispatch(appendEntry(newEntry));
     dispatch(setNotification(`${content.description} uploaded successfully!`, "success"));

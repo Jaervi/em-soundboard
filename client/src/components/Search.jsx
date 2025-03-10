@@ -24,9 +24,9 @@ const Search = () => {
   });
 
   const filteredEntries = 
-    entries.filter(({ author, description }) => {
+    entries.filter(({ author, description, tags }) => {
       const key = keyword.toLowerCase()
-      return (author.toLowerCase().includes(key) || description.toLowerCase().includes(key))
+      return (author.toLowerCase().includes(key) || description.toLowerCase().includes(key) || tags.toString().trim(",").toLowerCase().includes(key))
     })
 
   const filteredUsers = 
@@ -63,6 +63,7 @@ const Search = () => {
                 description={x.description}
                 audio={x.audio}
                 user={x.user}
+                tags={x.tags}
               />
             ))}
           </Col>

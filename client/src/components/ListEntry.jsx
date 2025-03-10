@@ -23,7 +23,7 @@ const ListEntry2 = ({ id, author, description, audio }) => {
   );
 };
 
-const ListEntry = ({ id, author, description, audio, user = {username: "unknown"} }) => {
+const ListEntry = ({ id, author, description, audio, user = {username: "unknown"}, tags = [] }) => {
   const dispatch = useDispatch();
 
   const currentUser = useSelector(({ userData }) => {
@@ -39,8 +39,9 @@ const ListEntry = ({ id, author, description, audio, user = {username: "unknown"
     <Card style={{ width: '24rem', padding: '0.25rem', marginBottom: '0.25rem'}}>
       <Card.Body>
         <Card.Title>{author}</Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">Posted by {user.username}</Card.Subtitle>
         <Card.Text>{description}</Card.Text>
-        <Card.Text>Posted by {user.username}</Card.Text>
+        <Card.Text>Tags: {tags.map(x => ` #${x}`).toString()}</Card.Text>
       <AudioPlayer audioName={audio} />
       {(currentUser.username === user.username || currentUser.admin) && <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>}
       </Card.Body>
