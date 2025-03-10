@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Form from 'react-bootstrap/Form'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import ListEntry from './ListEntry'
 import { User } from './UserList'
 
@@ -48,22 +51,32 @@ const Search = () => {
           onChange={({ target }) => setKeyword(target.value)}
         />
       </Form>
-      {filteredEntries.map((x) => (
-        <ListEntry style={{padding: "0.20rem"}}
-          key={x.id}
-          id={x.id}
-          author={x.author}
-          description={x.description}
-          audio={x.audio}
-        />
-      ))}
-      {filteredUsers.map((user) => (
-        <User
-          key={user.id}
-          user={user}
-          currentUser={currentUser}
-        />
-      ))}
+      <Container fluid>
+        <Row>
+          <Col>
+            <h3>Entries</h3>
+            {filteredEntries.map((x) => (
+              <ListEntry style={{padding: "0.20rem"}}
+                key={x.id}
+                id={x.id}
+                author={x.author}
+                description={x.description}
+                audio={x.audio}
+              />
+            ))}
+          </Col>
+          <Col>
+            <h3>Users</h3>
+            {filteredUsers.map((user) => (
+              <User
+                key={user.id}
+                user={user}
+                currentUser={currentUser}
+              />
+            ))}
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }
