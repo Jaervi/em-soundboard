@@ -4,6 +4,7 @@ import LoginForm from "./components/LoginForm";
 import Notification from "./components/Notification";
 import UserList from "./components/UserList";
 import Navigation from "./components/Navigation"
+import Search from "./components/Search"
 import { initializeEntries } from "./reducers/entryReducer";
 import { initializeAllUsers, initializeUser } from "./reducers/userReducer";
 import { useEffect } from "react";
@@ -35,8 +36,10 @@ const App = () => {
   const Entries = () => {
     return (
       <div>
-        <EntryList />
         <EntryForm />
+        <br></br>
+        <h2>All Entries</h2>
+        <EntryList />
       </div>
     )
   }
@@ -51,8 +54,9 @@ const App = () => {
       <h1>Excuse Me Soundboard (coming soon)</h1>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/users" element={<UserList />}/>
-        <Route path="/entries" element={user && <Entries/>} />
+        <Route path="/users" element={user ? <UserList /> : <p>Log in to view Users</p>}/>
+        <Route path="/entries" element={user ? <Entries/> : <p>Log in to view Entries</p>} />
+        <Route path="/search" element={user ? <Search /> : <p>Log in to Search</p>} />
       </Routes>
     </div>
   );

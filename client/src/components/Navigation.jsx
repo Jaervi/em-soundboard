@@ -6,11 +6,15 @@ import Button from 'react-bootstrap/Button';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from "../reducers/userReducer";
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const Navigation = () => {
   const user = useSelector(({ userData }) => {
     return userData.user;
   });
+
+  const [search, setSearch] = useState('');
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -19,6 +23,12 @@ const Navigation = () => {
     dispatch(logoutUser());
     navigate('/');
   };
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    window.sessionStorage.setItem("SearchKeyword", search);
+    navigate(`/search`);
+  }
 
   return (
     <Navbar className='bg-body-tertiary' sticky='top' expand="lg">
@@ -51,8 +61,10 @@ const Navigation = () => {
               placeholder="Search"
               className="me-2"
               aria-label="Search"
+              value={search}
+              onChange={({ target }) => setSearch(target.value)}
             />
-            <Button variant="outline-success">Search</Button>
+            <Button variant="outline-success" onClick={handleSearch}>Search</Button>
           </Form>
         </Navbar.Collapse>
       </Container>
