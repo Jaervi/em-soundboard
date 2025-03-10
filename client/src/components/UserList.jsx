@@ -1,8 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { removeUser, promoteUser, createUser } from "../reducers/userReducer";
 import { useState } from "react";
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 
-const User = ({ user, deleteFunc, promoteFunc, currentUser }) => {
+export const User = ({ user, deleteFunc = undefined, promoteFunc = undefined, currentUser }) => {
   const deleteUser = (event) => {
     event.preventDefault();
     deleteFunc(user.username);
@@ -13,15 +15,14 @@ const User = ({ user, deleteFunc, promoteFunc, currentUser }) => {
   };
   return (
     <div>
-      <p>
-        {user.name} ({user.username}) Admin: {user.admin.toString()}
-      </p>
-      {currentUser?.admin &&
-        <div>
-          <button onClick={deleteUser}> Delete user </button>
-          <button onClick={promoteUser}> Make admin </button>
-        </div>
-      }
+      <Card style={{ width: '24rem', padding: '0.25rem', marginBottom: '0.25rem'}} className="bg-body-tertiary">
+      <Card.Body>
+        <Card.Title>{user.username}</Card.Title>
+        <Card.Text>{`Name: ${user.name}`}</Card.Text>
+        {deleteFunc && <Button onClick={deleteUser} variant="danger" disabled={!currentUser.admin} > Delete user </Button>}
+        {promoteFunc && <Button onClick={promoteUser} variant="primary" disabled={!currentUser.admin} className="ms-2"> Make admin </Button>}
+      </Card.Body>
+    </Card>
     </div>
   );
 };
@@ -96,8 +97,6 @@ const UserList = ({ user }) => {
     dispatch(promoteUser(username, currentUser));
   };
   return (
-    <div>
-      {currentUser ?
       <div>
         <h2>List of users</h2>
         {users.map((user) => (
@@ -113,9 +112,6 @@ const UserList = ({ user }) => {
           <UserForm />
         }
       </div>
-      :
-      <p>Log in to view users</p>}
-    </div>
   );
 };
 
