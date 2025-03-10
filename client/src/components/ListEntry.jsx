@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AudioPlayer from "./AudioPlayer";
 import { deleteEntry } from "../reducers/entryReducer";
 import Button from 'react-bootstrap/Button';
@@ -23,8 +23,12 @@ const ListEntry2 = ({ id, author, description, audio }) => {
   );
 };
 
-const ListEntry = ({ id, author, description, audio }) => {
+const ListEntry = ({ id, author, description, audio, user = {username: "unknown"} }) => {
   const dispatch = useDispatch();
+
+  const currentUser = useSelector(({ userData }) => {
+      return userData.user;
+    });
 
   const removeEntry = (event) => {
     event.preventDefault();
@@ -36,8 +40,9 @@ const ListEntry = ({ id, author, description, audio }) => {
       <Card.Body>
         <Card.Title>{author}</Card.Title>
         <Card.Text>{description}</Card.Text>
+        <Card.Text>Posted by {user.username}</Card.Text>
       <AudioPlayer audioName={audio} />
-      <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>
+      {currentUser.username === user.username && <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>}
       </Card.Body>
     </Card>
   );

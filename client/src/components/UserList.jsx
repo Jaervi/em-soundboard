@@ -20,7 +20,7 @@ export const User = ({ user, deleteFunc = undefined, promoteFunc = undefined, cu
         <Card.Title>{user.username}</Card.Title>
         <Card.Text>{`Name: ${user.name}`}</Card.Text>
         {deleteFunc && <Button onClick={deleteUser} variant="danger" disabled={!currentUser.admin} > Delete user </Button>}
-        {promoteFunc && <Button onClick={promoteUser} variant="primary" disabled={!currentUser.admin} className="ms-2"> Make admin </Button>}
+        {promoteFunc && !user.admin && <Button onClick={promoteUser} variant="primary" disabled={!currentUser.admin} className="ms-2"> Make admin </Button>}
       </Card.Body>
     </Card>
     </div>

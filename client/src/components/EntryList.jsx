@@ -16,6 +16,7 @@ const EntryList = () => {
               author={x.author}
               description={x.description}
               audio={x.audio}
+              user={x.user}
             />
           ))}
         </div>
