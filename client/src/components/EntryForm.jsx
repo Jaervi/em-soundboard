@@ -9,6 +9,10 @@ const EntryForm = () => {
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
+  const [link, setLink] = useState("");
+  const [embeddedLink, setEmbeddedLink] = useState(null);
+  const [start, setStart] = useState(0)
+  const [end, setEnd] = useState(0)
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState([]);
 
@@ -22,6 +26,11 @@ const EntryForm = () => {
   const handleTag = () => {
     setTags(tags.concat(tag));
     setTag("");
+  }
+
+  const handleLink = () => {
+    const trimmed = link.split('=')[1];
+    setEmbeddedLink(`https://www.youtube.com/embed/${trimmed}`);
   }
 
   const addEntry = (event) => {
@@ -70,7 +79,7 @@ const EntryForm = () => {
             onChange={({ target }) => setTag(target.value)}
           />
           <Button variant="primary" type="button" onClick={handleTag}>Add tag</Button>
-          <div>Tags so far: {tags.map(x => ` ${x}`).toString()}</div>
+          {tags.length !== 0 && <div>Tags so far: {tags.map(x => ` ${x}`).toString()}</div>}
         </Form.Group>
         <Form.Group className="mb-3" controlId="formFile" style={{width: '24rem'}}>
           <Form.Label>Audio file</Form.Label>
@@ -81,6 +90,32 @@ const EntryForm = () => {
             ref={fileInputRef}
           />
         </Form.Group>
+        <Form.Group className="mb-3" controlId="formExternalLink" style={{width: '24rem'}}>
+          <Form.Label>External Link (Youtube etc.)</Form.Label>
+          <Form.Control
+            type="text"
+            value={link}
+            onChange={({ target }) => setLink(target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formVideoStart" style={{width: '24rem'}}>
+          <Form.Label>Start time</Form.Label>
+          <Form.Control
+            type="number"
+            value={start}
+            onChange={({ target }) => setStart(target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formVideoEnd" style={{width: '24rem'}}>
+          <Form.Label>End time</Form.Label>
+          <Form.Control
+            type="number"
+            value={end}
+            onChange={({ target }) => setEnd(target.value)}
+          />
+        </Form.Group>
+        <Button variant="primary" type="button" onClick={handleLink} >View video</Button>
+        {embeddedLink && <iframe width="420" height="315" src={`${embeddedLink}?start=${start}` + (end > start ? `&end=${end}` : "")}/>}
         <Button variant='success' type="submit">Add entry</Button>
       </Form>
     </div>
