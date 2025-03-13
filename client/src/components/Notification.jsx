@@ -9,7 +9,7 @@ const Notification = () => {
   if (notification !== "") {
     console.log(notification);
     return (
-      <Alert key={variant} variant={variant}>{notification}</Alert>
+      <Alert key={variant} variant={variant} className="fixed-bottom">{notification}</Alert>
     );
   } else {
     return;
