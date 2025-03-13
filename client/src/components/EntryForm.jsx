@@ -64,6 +64,19 @@ const EntryForm = () => {
     }
   };
 
+  const TimeFormInput = ({label, value, handler, controlId}) => {
+    return (
+      <Form.Group as={Col} className="mb-3" controlId={controlId} >
+        <Form.Label>{label}</Form.Label>
+        <Form.Control
+          type="number"
+          value={value}
+          onChange={({ target }) => handler(Number(target.value))}
+        />
+      </Form.Group>
+    )
+  }
+
   return (
     <div>
       <h2>Add entry</h2>
@@ -112,40 +125,12 @@ const EntryForm = () => {
               onChange={({ target }) => setLink(target.value)}
             />
           </Form.Group>
-          <Form.Group as={Col} className="mb-3" controlId="formVideoStartM" >
-            <Form.Label>Start minute</Form.Label>
-            <Form.Control
-              type="number"
-              value={startM}
-              onChange={({ target }) => setStartM(Number(target.value))}
-            />
-          </Form.Group>
-          <Form.Group as={Col} className="mb-3" controlId="formVideoStartS" >
-            <Form.Label>Start second</Form.Label>
-            <Form.Control
-              type="number"
-              value={startS}
-              onChange={({ target }) => setStartS(Number(target.value))}
-            />
-          </Form.Group>
-          <Form.Group as={Col} className="mb-3" controlId="formVideoEndM" >
-            <Form.Label>End minute</Form.Label>
-            <Form.Control
-              type="number"
-              value={endM}
-              onChange={({ target }) => setEndM(Number(target.value))}
-            />
-          </Form.Group>
-          <Form.Group as={Col} className="mb-3" controlId="formVideoEndS" >
-            <Form.Label>End second</Form.Label>
-            <Form.Control
-              type="number"
-              value={endS}
-              onChange={({ target }) => setEndS(Number(target.value))}
-            />
-          </Form.Group>
+          <TimeFormInput label={"Start minute"} value={startM} handler={setStartM} controlId={"formVideoStartM"} />
+          <TimeFormInput label={"Start second"} value={startS} handler={setStartS} controlId={"formVideoStartS"} />
+          <TimeFormInput label={"End minute"} value={endM} handler={setEndM} controlId={"formVideoEndM"} />
+          <TimeFormInput label={"End second"} value={endS} handler={setEndS} controlId={"formVideoEndS"} />
         </Row>
-        <Button variant="primary" type="button" onClick={() => showVideo ? setShowVideo(false) : setShowVideo(true)} >{showVideo ? "Hide video" : "View video"}</Button>
+        <Button variant="primary" type="button" onClick={() => setShowVideo(!showVideo)} >{showVideo ? "Hide video" : "View video"}</Button>
         {showVideo && link !== "" && 
           <VideoPlayer start={{s: startS, m: startM}} end={{s: endS, m: endM}} link={link} setStart={{s: setStartS, m: setStartM}} setEnd={{s: setEndS, m: setEndM}}/>
         }
