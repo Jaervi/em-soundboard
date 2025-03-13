@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Overlay from 'react-bootstrap/Overlay';
 import { setNotification } from "../reducers/notificationReducer";
 import VideoPlayer from "./VideoPlayer"
 
@@ -22,6 +23,7 @@ const EntryForm = () => {
   const [showVideo, setShowVideo] = useState(false)
 
   const fileInputRef = useRef(null);
+  const showVideoButtonRef = useRef(null);
   const dispatch = useDispatch();
 
   const handleFileChange = (event) => {
@@ -116,24 +118,50 @@ const EntryForm = () => {
             ref={fileInputRef}
           />
         </Form.Group>
-        <Row style={{width: "50rem"}}> 
-          <Form.Group as={Col} className="mb-3" controlId="formExternalLink" xs={6}>
-            <Form.Label>External Link (Youtube etc.)</Form.Label>
-            <Form.Control
-              type="text"
-              value={link}
-              onChange={({ target }) => setLink(target.value)}
-            />
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="formExternalLink" style={{width: '24rem'}}>
+          <Form.Label>External Link (Youtube etc.)</Form.Label>
+          <Form.Control
+            type="text"
+            value={link}
+            onChange={({ target }) => setLink(target.value)}
+          />
+        </Form.Group>
+        <Row style={{width: "24rem"}}>
           <TimeFormInput label={"Start minute"} value={startM} handler={setStartM} controlId={"formVideoStartM"} />
           <TimeFormInput label={"Start second"} value={startS} handler={setStartS} controlId={"formVideoStartS"} />
           <TimeFormInput label={"End minute"} value={endM} handler={setEndM} controlId={"formVideoEndM"} />
           <TimeFormInput label={"End second"} value={endS} handler={setEndS} controlId={"formVideoEndS"} />
         </Row>
         <Button variant="primary" type="button" onClick={() => setShowVideo(!showVideo)} >{showVideo ? "Hide video" : "View video"}</Button>
-        {showVideo && link !== "" && 
-          <VideoPlayer start={{s: startS, m: startM}} end={{s: endS, m: endM}} link={link} setStart={{s: setStartS, m: setStartM}} setEnd={{s: setEndS, m: setEndM}}/>
-        }
+        
+        <Overlay target={showVideoButtonRef.current} show={showVideo} placement="right">
+          {({
+            placement: _placement,
+            arrowProps: _arrowProps,
+            show: _show,
+            popper: _popper,
+            hasDoneInitialMeasure: _hasDoneInitialMeasure,
+            ...props
+          }) => (
+            <div
+              {...props}
+              style={{
+                position: 'absolute',
+                backgroundColor: 'rgb(248, 249, 250)',
+                padding: '10px 10px',
+                color: 'white',
+                borderRadius: 3,
+                marginLeft: '-50%',
+                boxShadow: 'shadow-lg', // doesnt seem to work
+                ...props.style,
+              }}
+            >
+              {showVideo && link !== "" && 
+                <VideoPlayer start={{s: startS, m: startM}} end={{s: endS, m: endM}} link={link} setStart={{s: setStartS, m: setStartM}} setEnd={{s: setEndS, m: setEndM}}/>
+              }
+            </div>
+          )}
+        </Overlay>
         <Button variant='success' type="submit">Add entry</Button>
       </Form>
     </div>
