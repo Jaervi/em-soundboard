@@ -41,7 +41,7 @@ const ListEntry = ({ id, author, description, audio, user = {username: "unknown"
         <Card.Title>{author}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">Posted by {user.username}</Card.Subtitle>
         <Card.Text>{description}</Card.Text>
-        <Card.Text>Tags: {tags.map(x => ` #${x}`).toString()}</Card.Text>
+        {tags.length !== 0 && <Card.Text>Tags: {tags.map(x => ` #${x}`).toString()}</Card.Text>}
       <AudioPlayer audioName={audio} />
       {(currentUser.username === user.username || currentUser.admin) && <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>}
       </Card.Body>
