@@ -21,6 +21,16 @@ const uploadFile = async (file) => {
   return data.fileKey;
 };
 
+const sendForDownload = async (link, start, end) => {
+  const { data } = await axios.post(`${baseUrl}/download-content`, {
+    link,
+    start,
+    end,
+  })
+  //console.log(data);
+  return data.fileKey;
+}
+
 const getFileURL = async (fileName) => {
   const response = await axios.get(`${baseUrl}/sounds/${fileName}`);
   //console.log(response)
@@ -40,4 +50,4 @@ const removeFile = async (fileName) => {
   }
 };
 
-export default { uploadFile, getFileURL, removeFile };
+export default { uploadFile, getFileURL, removeFile, sendForDownload };

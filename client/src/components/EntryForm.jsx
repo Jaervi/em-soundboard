@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { createEntry } from "../reducers/entryReducer";
+import { createEntry, createEntryExternal } from "../reducers/entryReducer";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { setNotification } from "../reducers/notificationReducer";
@@ -33,19 +33,29 @@ const EntryForm = () => {
     setEmbeddedLink(`https://www.youtube.com/embed/${trimmed}`);
   }
 
+  const resetInputFields = () => {
+    setAuthor("");
+    setDescription("");
+    setFile(null);
+    setTags([]);
+    setTag("");
+    setLink("");
+    setStart(0);
+    setEnd(0);
+    setEmbeddedLink(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
   const addEntry = (event) => {
     event.preventDefault();
     if (file && author !== "" && description !== "") {
       dispatch(createEntry({ author, description, file, tags }));
-      setAuthor("");
-      setDescription("");
-      setFile(null);
-      setTags([]);
-      setTag("");
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      resetInputFields()
+    } else if (embeddedLink && link !== "" && author !== "" && description !== ""){
+      dispatch(createEntryExternal({ author, description, link, tags, start, end}))
+      resetInputFields()
     } else {
       dispatch(setNotification(`Incorrect input`, "danger", 10));
     }

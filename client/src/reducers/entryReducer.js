@@ -52,6 +52,25 @@ export const createEntry = (content) => {
   };
 };
 
+export const createEntryExternal = (content) => {
+  return async (dispatch) => {
+    //Send file to downloader
+    dispatch(setNotification(`Downloading audio...`), "success", 10);
+    const key = await fileService.sendForDownload(content.link, content.start, content.end)
+
+    //Send text data to MongoDB
+    dispatch(setNotification(`Download complete. Updating the database...`), "success", 10);
+    const newEntry = await entryService.create({
+      author: content.author,
+      description: content.description,
+      audio: key,
+      tags: content.tags
+    });
+    dispatch(appendEntry(newEntry));
+    dispatch(setNotification(`${content.description} uploaded successfully!`, "success"));
+  }
+}
+
 export const deleteEntry = (entry) => {
   return async (dispatch) => {
     //Remove file from S3
