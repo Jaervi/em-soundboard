@@ -94,7 +94,7 @@ router.post("/download-content", async (req, res) => {
     try {
       const fileName = path.basename(filePath)
       //console.log("Filename in cache ", fileName);
-      const fileType = "audio/mp4"
+      const fileType = "audio/m4a"
   
       const ext = fileName.split(".").pop(); // File extension
       const uniqueName = `${crypto.randomUUID()}.${ext}`;
@@ -116,7 +116,10 @@ router.post("/download-content", async (req, res) => {
       });
 
       // Removes file from cache
-      fs.rm(filePath);
+      fs.unlink(filePath, (err) => {
+        if (err) throw err;
+        console.log(filePath, ' was deleted');
+      }); 
 
       res.json({ url, fileKey: uniqueName });
 
