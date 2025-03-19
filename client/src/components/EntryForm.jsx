@@ -21,12 +21,15 @@ const EntryForm = () => {
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState([]);
   const [showVideo, setShowVideo] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   const fileInputRef = useRef(null);
   const showVideoButtonRef = useRef(null);
   const dispatch = useDispatch();
 
   const handleFileChange = (event) => {
+    console.log(event.target.files[0]);
+
     setFile(event.target.files[0]);
   };
 
@@ -116,6 +119,19 @@ const EntryForm = () => {
             ref={fileInputRef}
           />
         </Form.Group>
+
+        {file && (
+          <div style={{ display: 'flex', gap: 10, marginBottom: 10, width: '30rem' }}>
+            <audio controls>
+              <source src={URL.createObjectURL(file)} type={file.type}></source>
+              Your browser does not support the audio element.
+            </audio>
+            <Button variant="primary" type="button" onClick={() => setShowEdit(!showEdit)}>
+              Edit audio
+            </Button>
+          </div>
+        )}
+
         <Form.Group className="mb-3" controlId="formExternalLink" style={{ width: '24rem' }}>
           <Form.Label>External Link (Youtube etc.)</Form.Label>
           <Form.Control type="text" value={link} onChange={({ target }) => setLink(target.value)} />
