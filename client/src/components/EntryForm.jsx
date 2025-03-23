@@ -8,6 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Modal from 'react-bootstrap/Modal';
 import { setNotification } from '../reducers/notificationReducer';
 import VideoPlayer from './VideoPlayer';
+import AudioEditor from './AudioEditor';
 
 const EntryForm = () => {
   const [author, setAuthor] = useState('');
@@ -24,7 +25,6 @@ const EntryForm = () => {
   const [showEdit, setShowEdit] = useState(false);
 
   const fileInputRef = useRef(null);
-  const showVideoButtonRef = useRef(null);
   const dispatch = useDispatch();
 
   const handleFileChange = (event) => {
@@ -131,6 +131,12 @@ const EntryForm = () => {
             </Button>
           </div>
         )}
+
+        <Modal show={showEdit} onHide={() => setShowEdit(false)} centered size='lg'>
+          {file && <div>
+            <AudioEditor file={file}/>
+            </div>}
+        </Modal>
 
         <Form.Group className="mb-3" controlId="formExternalLink" style={{ width: '24rem' }}>
           <Form.Label>External Link (Youtube etc.)</Form.Label>
