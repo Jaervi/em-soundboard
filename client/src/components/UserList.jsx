@@ -5,6 +5,8 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
 export const User = ({ user, deleteFunc = undefined, promoteFunc = undefined, currentUser }) => {
+  const [more, setMore] = useState(false)
+
   const deleteUser = (event) => {
     event.preventDefault();
     deleteFunc(user.username);
@@ -16,12 +18,17 @@ export const User = ({ user, deleteFunc = undefined, promoteFunc = undefined, cu
   return (
     <div>
       <Card style={{ width: '24rem', padding: '0.25rem', marginBottom: '0.25rem'}} className="bg-body-tertiary">
-      <Card.Body>
-        <Card.Title>{user.username}</Card.Title>
-        <Card.Text>{`Name: ${user.name}`}</Card.Text>
+      <Card.Header style={{fontSize: 20}}>
+        {user.username}
+        <Button variant="primary" onClick={() => setMore(!more)} style={{float: "right" }}>{more ? "Shrink" : "Expand"}</Button>
+      </Card.Header>
+      {more && <Card.Body>
+        <Card.Text>Name: {user.name}</Card.Text>
+        <Card.Text>Entries uploaded: {user.entries.length}</Card.Text>
+        <Card.Text>Downloads used: {user.downloads}</Card.Text>
         {deleteFunc && <Button onClick={deleteUser} variant="danger" disabled={!currentUser.admin} > Delete user </Button>}
         {promoteFunc && !user.admin && <Button onClick={promoteUser} variant="primary" disabled={!currentUser.admin} className="ms-2"> Make admin </Button>}
-      </Card.Body>
+      </Card.Body>}
     </Card>
     </div>
   );

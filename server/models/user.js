@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   name: String,
   admin: Boolean,
   passwordHash: String,
+  downloads: Number,
   entries: [
     {
       type: mongoose.Schema.Types.ObjectId,

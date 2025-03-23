@@ -16,10 +16,13 @@ const entrySlice = createSlice({
     removeEntry(state, action) {
       return state.filter((entry) => entry.id != action.payload);
     },
+    updateEntry(state, action) {
+      return state.map((entry) => entry.id === action.payload.id ? action.payload : entry)
+    },
   },
 });
 
-export const { appendEntry, setEntries, removeEntry } = entrySlice.actions;
+export const { appendEntry, setEntries, removeEntry, updateEntry } = entrySlice.actions;
 
 //Waiting for DB functionality
 
@@ -45,6 +48,10 @@ export const createEntry = (content) => {
       author: content.author,
       description: content.description,
       audio: key,
+      stats: {
+        likes: 0,
+        downloads: 0
+      },
       tags: content.tags
     });
     dispatch(appendEntry(newEntry));
@@ -64,6 +71,10 @@ export const createEntryExternal = (content) => {
       author: content.author,
       description: content.description,
       audio: key,
+      stats: {
+        likes: 0,
+        downloads: 0
+      },
       tags: content.tags
     });
     dispatch(appendEntry(newEntry));
@@ -83,5 +94,15 @@ export const deleteEntry = (entry) => {
     dispatch(removeEntry(entry.id));
   };
 };
+
+export const updateEntryDatabase = (entry) => {
+  return async (dispatch) => {
+    // Update data to MongoDB
+    await entryService.update(entry.id, entry);
+
+    // Update data to session storage
+    dispatch(updateEntry(entry));
+  }
+}
 
 export default entrySlice.reducer;

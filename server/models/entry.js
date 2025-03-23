@@ -9,6 +9,10 @@ const schema = mongoose.Schema({
       type: String
     }
   ],
+  stats: {
+    likes: Number,
+    downloads: Number,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

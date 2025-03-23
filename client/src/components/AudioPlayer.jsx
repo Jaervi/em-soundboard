@@ -1,13 +1,23 @@
 import { useState } from "react";
 import fileService from "../services/files";
 import Button from 'react-bootstrap/Button';
+import { incrementUserDownloads } from "../reducers/userReducer";
+import { useDispatch, useSelector } from "react-redux";
 
 
-const AudioPlayer = ({ audioName }) => {
+const AudioPlayer = ({ audioName, handleDownload }) => {
   const [audioURL, setAudioURL] = useState(null);
+
+  const dispatch = useDispatch()
+
+  const currentUser = useSelector(({ userData }) => {
+    return userData.user;
+  });
 
   const toggleLoaded = async () => {
     const newURL = await fileService.getFileURL(audioName);
+    handleDownload()
+    dispatch(incrementUserDownloads(currentUser))
     setAudioURL(newURL);
   };
 

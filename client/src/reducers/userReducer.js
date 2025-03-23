@@ -124,6 +124,17 @@ export const promoteUser = (username, user) => {
   };
 };
 
+export const incrementUserDownloads = (user) => {
+  return async (dispatch) => {
+    try {
+      const updatedUser = await userService.incrementDownloads(user)
+      dispatch(replaceUserInList(updatedUser));
+    } catch (error) {
+      dispatch(setNotification(error.response.data.error, "danger", 5))
+    }
+  }
+}
+
 const rootReducer = combineReducers({
   user: userSlice.reducer,
   allUsers: userListSlice.reducer,

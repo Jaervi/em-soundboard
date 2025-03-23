@@ -36,7 +36,8 @@ usersRouter.post("/", async (request, response) => {
     name,
     passwordHash,
     admin: false,
-    entries: []
+    entries: [],
+    downloads: 0
   });
 
   const savedUser = await user.save();
@@ -61,6 +62,22 @@ usersRouter.post("/:username/makeadmin", async (request, response) => {
 
   console.log(`Returning ${JSON.stringify(updatedUser)}`);
 
+  response.json(updatedUser);
+});
+
+usersRouter.post("/incrementDownloads", async (request, response) => {
+  const user = request.user;
+  const username = user.username
+
+  if (!user) {
+    return response.status(401).json({ error: "current user invalid" });
+  }
+
+  const updatedUser = await User.findOneAndUpdate(
+    { username },
+    { downloads: user?.downloads ? user.downloads + 1 : 1 },
+    { new: true }
+  )
   response.json(updatedUser);
 });
 

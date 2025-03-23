@@ -13,6 +13,12 @@ const promoteUser = async (username, user) => {
   return response.data;
 };
 
+const incrementDownloads = async (user) => {
+  const config = getConfig(user);
+  const response = await axios.post(`${baseUrl}/incrementDownloads`,{},config)
+  return response.data
+}
+
 const getAll = async () => {
   const response = await axios.get(baseUrl);
   return response.data;
@@ -28,4 +34,4 @@ const remove = async (username, user) => {
   const response = await axios.delete(`${baseUrl}/${username}`, config);
   return response.data;
 };
-export default { promoteUser, getAll, remove, create };
+export default { promoteUser, getAll, remove, create, incrementDownloads };
