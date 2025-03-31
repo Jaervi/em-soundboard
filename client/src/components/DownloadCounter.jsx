@@ -11,7 +11,7 @@ const DownloadCounter = () => {
   const user = users.find(x => x.username === currentUser.username)
   return (
     <div className="fixed-bottom">
-      <Card body style={{ float: "right" }} bg='success'>Downloads used: {user.downloads}</Card>
+      <Card body style={{ float: "right" }} bg='success'>Downloads used: {user ? user.downloads : 0}</Card>
     </div>
   )
 }
