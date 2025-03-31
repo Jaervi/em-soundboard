@@ -2,6 +2,8 @@ const config = require("./utils/config");
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const morgan = require('morgan');
+morgan.token('type', function (req) { return JSON.stringify(req.body) })
 require("express-async-errors");
 
 const middleware = require("./utils/middleware");
@@ -26,6 +28,7 @@ mongoose
 app.use(middleware.tokenExtractor);
 app.use(cors());
 app.use(express.json());
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :type'))
 
 app.use("/api/users", middleware.userExtractor, usersRouter);
 app.use("/api/login", loginRouter);
