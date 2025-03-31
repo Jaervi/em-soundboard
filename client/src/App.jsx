@@ -5,6 +5,7 @@ import Notification from "./components/Notification";
 import UserList from "./components/UserList";
 import Navigation from "./components/Navigation"
 import Search from "./components/Search"
+import DownloadCounter from "./components/DownloadCounter";
 import { initializeEntries } from "./reducers/entryReducer";
 import { initializeAllUsers, initializeUser } from "./reducers/userReducer";
 import { useEffect } from "react";
@@ -50,6 +51,7 @@ const App = () => {
   return (
     <div className="container">
       <Notification />
+      {user && <DownloadCounter/>}
       <Navigation />
       <h1>Excuse Me Soundboard (coming soon)</h1>
       <Routes>
