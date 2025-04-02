@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { createEntry, createEntryExternal } from '../reducers/entryReducer';
 import Button from 'react-bootstrap/Button';
@@ -15,10 +15,7 @@ const EntryForm = () => {
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
   const [link, setLink] = useState('');
-  const [startS, setStartS] = useState(0);
-  const [startM, setStartM] = useState(0);
-  const [endS, setEndS] = useState(0);
-  const [endM, setEndM] = useState(0);
+  const [videoTime, setVideoTime] = useState({ start: { m: 0, s: 0 }, end: { m: 0, s: 0 } });
   const [tag, setTag] = useState('');
   const [tags, setTags] = useState([]);
   const [showVideo, setShowVideo] = useState(false);
@@ -45,10 +42,7 @@ const EntryForm = () => {
     setTags([]);
     setTag('');
     setLink('');
-    setStartS(0);
-    setEndS(0);
-    setStartM(0);
-    setEndM(0);
+    setVideoTime({ start: { m: 0, s: 0 }, end: { m: 0, s: 0 } });
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -60,8 +54,8 @@ const EntryForm = () => {
       dispatch(createEntry({ author, description, file, tags }));
       resetInputFields();
     } else if (link !== '' && author !== '' && description !== '') {
-      const start = { m: startM, s: startS };
-      const end = { m: endM, s: endS };
+      const start = videoTime.start;
+      const end = videoTime.end;
       dispatch(createEntryExternal({ author, description, link, tags, start, end }));
       resetInputFields();
     } else {
@@ -69,14 +63,39 @@ const EntryForm = () => {
     }
   };
 
-  const TimeFormInput = ({ label, value, handler, controlId }) => {
+  const TimeFormInput = ({ label, value, controlId, field }) => {
+    const calcTimeSum = (time) => {
+      return ((time.end.m * 60 + time.end.s) - (time.start.m * 60 + time.start.s));
+    }
+    const handleChange = (newValue) => {
+      let time = { 
+        start: { ...videoTime.start },
+        end: { ...videoTime.end }
+      };
+      if (newValue >= 0 && newValue < 60) {
+        time[field[0]][field[1]] = newValue;
+      } else if (newValue < 0) {
+        if (field[1] === 's') {
+          time[field[0]]['m'] = Math.max(0, videoTime[field[0]]['m'] - 1);
+        }
+        time[field[0]][field[1]] = 60 + newValue;
+      } else if (field[1] === 's') {
+        time[field[0]]['m'] = videoTime[field[0]]['m'] + 1;
+        time[field[0]][field[1]] = newValue - 60;
+      }
+      console.log("Videotime:", videoTime, "newTime:", time, calcTimeSum(time));
+        
+      if (calcTimeSum(time) > 0) {
+        setVideoTime(time);
+      }
+    }
     return (
       <Form.Group as={Col} className="mb-3" controlId={controlId}>
         <Form.Label>{label}</Form.Label>
         <Form.Control
           type="number"
           value={value}
-          onChange={({ target }) => handler(Number(target.value))}
+          onChange={({ target }) => handleChange(Number(target.value))}
         />
       </Form.Group>
     );
@@ -104,7 +123,8 @@ const EntryForm = () => {
         </Form.Group>
         <Form.Group className="mb-3" controlId="formTags">
           <Form.Label>Tags</Form.Label>
-          <Form.Control type="text" value={tag} onChange={({ target }) => setTag(target.value)} />
+          <Form.Control type="text" value={tag} onChange={({ target }) => setTag(target.value)} onKeyDown={(e) => console.log(e.key)}
+          />
           <Button variant="primary" type="button" onClick={handleTag}>
             Add tag
           </Button>
@@ -123,7 +143,7 @@ const EntryForm = () => {
         {file && (
           <div style={{ display: 'flex', gap: 10, marginBottom: 10, width: '30rem' }}>
             <audio controls>
-              <source src={URL.createObjectURL(file)} type={file.type}></source>
+              <source src={URL.createObjectURL(file)} type={file?.type || 'audio/mpeg'}></source>
               Your browser does not support the audio element.
             </audio>
             <Button variant="primary" type="button" onClick={() => setShowEdit(!showEdit)}>
@@ -145,27 +165,27 @@ const EntryForm = () => {
         <Row style={{ width: '24rem' }}>
           <TimeFormInput
             label={'Start minute'}
-            value={startM}
-            handler={setStartM}
+            value={videoTime.start.m}
             controlId={'formVideoStartM'}
+            field={['start', 'm']}
           />
           <TimeFormInput
             label={'Start second'}
-            value={startS}
-            handler={setStartS}
+            value={videoTime.start.s}
             controlId={'formVideoStartS'}
+            field={['start', 's']}
           />
           <TimeFormInput
             label={'End minute'}
-            value={endM}
-            handler={setEndM}
+            value={videoTime.end.m}
             controlId={'formVideoEndM'}
+            field={['end', 'm']}
           />
           <TimeFormInput
             label={'End second'}
-            value={endS}
-            handler={setEndS}
+            value={videoTime.end.s}
             controlId={'formVideoEndS'}
+            field={['end', 's']}
           />
         </Row>
         <div style={{ display: 'flex', gap: 10 }}>
@@ -180,11 +200,9 @@ const EntryForm = () => {
         <Modal show={showVideo} onHide={() => setShowVideo(false)} centered={true} size="lg">
           {showVideo && link !== '' && (
             <VideoPlayer
-              start={{ s: startS, m: startM }}
-              end={{ s: endS, m: endM }}
+              time={videoTime}
               link={link}
-              setStart={{ s: setStartS, m: setStartM }}
-              setEnd={{ s: setEndS, m: setEndM }}
+              handler={setVideoTime}
               height={420} // Set video player size here
             />
           )}

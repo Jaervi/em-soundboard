@@ -3,7 +3,8 @@ import Button from 'react-bootstrap/esm/Button';
 import Youtube from 'react-youtube';
 import Container from 'react-bootstrap/esm/Container';
 
-const VideoPlayer = ({ start, end, link, setStart, setEnd, height }) => {
+const VideoPlayer = ({ time, link, handler, height }) => {
+  const { start, end } = time;
   const [player, setPlayer] = useState(null);
   const width = height * (1920 / 1080);
 
@@ -21,8 +22,13 @@ const VideoPlayer = ({ start, end, link, setStart, setEnd, height }) => {
     if (player) {
       const currentTime = player.getCurrentTime();
       // Rounds the time to integer
-      setStart.s(currentTime % 60 | 0);
-      setStart.m((currentTime / 60) | 0);
+      let newTime = { 
+        start: { ...time.start },
+        end: { ...time.end }
+      };
+      newTime.start.s = currentTime % 60 | 0;
+      newTime.start.m = (currentTime / 60) | 0;
+      handler(newTime);
     }
   };
 
@@ -30,8 +36,13 @@ const VideoPlayer = ({ start, end, link, setStart, setEnd, height }) => {
     if (player) {
       const currentTime = player.getCurrentTime();
       // Rounds the time to integer
-      setEnd.s(currentTime % 60 | 0);
-      setEnd.m((currentTime / 60) | 0);
+      let newTime = { 
+        start: { ...time.start },
+        end: { ...time.end }
+      };
+      newTime.end.s = currentTime % 60 | 0;
+      newTime.end.m = (currentTime / 60) | 0;
+      handler(newTime);
     }
   };
 
