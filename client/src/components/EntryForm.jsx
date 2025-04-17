@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { createEntry, createEntryExternal } from '../reducers/entryReducer';
 import Button from 'react-bootstrap/Button';
@@ -14,6 +14,7 @@ const EntryForm = () => {
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
+  const [audioTime, setAudioTime] = useState({ start: 0, end: 0 })
   const [link, setLink] = useState('');
   const [videoTime, setVideoTime] = useState({ start: { m: 0, s: 0 }, end: { m: 0, s: 0 } });
   const [tag, setTag] = useState('');
@@ -43,6 +44,7 @@ const EntryForm = () => {
     setTag('');
     setLink('');
     setVideoTime({ start: { m: 0, s: 0 }, end: { m: 0, s: 0 } });
+    setAudioTime({ start: 0, end: 0 })
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -51,8 +53,13 @@ const EntryForm = () => {
   const addEntry = (event) => {
     event.preventDefault();
     if (file && author !== '' && description !== '') {
-      dispatch(createEntry({ author, description, file, tags }));
-      resetInputFields();
+      if (audioTime.start != 0 || audioTime.end != 0) {
+        console.log(audioTime);
+        
+      } else {
+        dispatch(createEntry({ author, description, file, tags }));
+        resetInputFields();
+      }
     } else if (link !== '' && author !== '' && description !== '') {
       const start = videoTime.start;
       const end = videoTime.end;
@@ -154,7 +161,7 @@ const EntryForm = () => {
 
         <Modal show={showEdit} onHide={() => setShowEdit(false)} centered size='lg'>
           {file && <div>
-            <AudioEditor file={file}/>
+            <AudioEditor file={file} audioTime={audioTime} setAudioTime={setAudioTime} showEdit={showEdit} setShowEdit={setShowEdit}/>
             </div>}
         </Modal>
 
