@@ -27,7 +27,7 @@ const EntryForm = () => {
 
   const handleFileChange = (event) => {
     console.log(event.target.files[0]);
-
+    setAudioTime({ start: 0, end: 0 })
     setFile(event.target.files[0]);
   };
 

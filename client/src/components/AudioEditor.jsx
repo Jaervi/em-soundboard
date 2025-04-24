@@ -9,6 +9,7 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
   const translateWidth = 95
   const [translate, setTranslate] = useState(0)
   const [translateEnd, setTranslateEnd] = useState(translateWidth)
+  const [translateStart, setTranslateStart] = useState(0)
   const draggedRef = useRef(false)
   const audioRef = useRef(new Audio(URL.createObjectURL(file)))
   const dispatch = useDispatch()
@@ -24,38 +25,62 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
     return parseFloat(num.toFixed(decimal))
   }
 
+  const resetAudioToStart = (audio) => {
+    console.log(`Resetting audio to ${translateStart}`)
+    setAudioDuration(0)
+    setTranslate(translateStart)
+    audio.currentTime = translateToAudio(translateStart, audio.duration)
+  }
+
+  const updateAudioTimes = (audio) => {
+    document.getElementById('tracktime').innerHTML = `start: ${roundToDecimal(audio.currentTime, 2)} s, end: ${roundToDecimal((translateEnd / translateWidth) * audio.duration, 2)} s`
+  }
+
   useEffect(() => {
     const audio = audioRef.current
-    document.getElementById('tracktime').innerHTML = `start: ${audio.currentTime} s, end: ${(translateEnd / translateWidth) * audio.duration}`
-    audio.addEventListener("loadedmetadata", () => {
+    updateAudioTimes(audio)
+
+    const metaDataListener = () => {
       console.log("Audio loaded", audio.duration)
-      setTranslate(roundToDecimal(audioToTranslate(audioTime.start, audio.duration), 2))
+      const initialTranslate = roundToDecimal(audioToTranslate(audioTime.start, audio.duration), 2)
+      setTranslate(initialTranslate)
+      setTranslateStart(initialTranslate)
       audio.currentTime = audioTime.start
       if (audioTime.end != 0) {
+        console.log(`Setting end time ${roundToDecimal(audioToTranslate(audioTime.end, audio.duration), 2)}`)
         setTranslateEnd(roundToDecimal(audioToTranslate(audioTime.end, audio.duration), 2))
       }
-    })
-    audio.addEventListener("ended", () => {
-      console.log("Audio ended");
-      setTranslate(0)
-      setAudioDuration(0)
-      audio.currentTime = 0
-    })
-    audio.addEventListener("pause", () => {
+    }
+
+    const endListener = () => {
+      console.log("Audio ended")
+      resetAudioToStart(audio)
+    }
+
+    const pauseListener = () => {
       setTranslate(audioToTranslate(audio.currentTime, audio.duration))  
       setAudioDuration(0)
       console.log(`Pausing audio at ${audio.currentTime}, ${audio.paused}`)
-    })
-    audio.ontimeupdate = () => {
-      console.log(`Time: ${audio.currentTime}, translateEnd: ${translateEnd}`)
-      document.getElementById('tracktime').innerHTML = `start: ${audio.currentTime} s, end: ${(translateEnd / translateWidth) * audio.duration}`
-      if (audio.currentTime > translateEnd / translateWidth * audio.duration) {
-        console.log("Audio ended, resetting")
+    }
+
+    const timeUpdateListener = () => {
+      console.log(`Time: ${audio.currentTime}, condition: ${audio.currentTime > translateToAudio(translateEnd, audio.duration)}, translateEnd: ${translateEnd}`)
+      updateAudioTimes(audio)
+      if (audio.currentTime > translateToAudio(translateEnd, audio.duration)) {
         audio.pause()
-        setTranslate(0)
-        setAudioDuration(0)
-        audio.currentTime = 0
+        resetAudioToStart(audio)
       }
+    }
+
+    audio.addEventListener("loadedmetadata", metaDataListener)
+    audio.addEventListener("ended", endListener)
+    audio.addEventListener("pause", pauseListener)
+    audio.addEventListener("timeupdate", timeUpdateListener)
+    return () => {
+      audio.removeEventListener("loadedmetadata", metaDataListener)
+      audio.removeEventListener("ended", endListener)
+      audio.removeEventListener("pause", pauseListener)
+      audio.removeEventListener("timeupdate", timeUpdateListener)
     }
   }, [file, translateEnd])
   
@@ -63,8 +88,8 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
   const handlePlay = () => {
     const audio = audioRef.current
     console.log(audioDuration, `Audio duration ${audio.duration}, current time ${audio.currentTime}`)
-    setAudioDuration(Number(audio.duration - audio.currentTime))
-    setTranslate(translateWidth)
+    setAudioDuration(Number(translateToAudio(translateEnd, audio.duration) - audio.currentTime))
+    setTranslate(translateEnd)
     audio.play()
   }
 
@@ -80,18 +105,33 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
   const handleDrop = (e) => {
     e.preventDefault()
     const audio = audioRef.current
+
     // Calculates x coordinate with help of "editAudioDiv" and fontSize
     const xCoord = e.clientX - document.getElementById("editAudioDiv").getBoundingClientRect().x - (fontSize / 2)
-    
-    const percentage = (xCoord / e.target.clientWidth) * translateWidth
-    if (draggedRef.current === document.getElementById("endMarker")) {
-      setTranslateEnd(percentage)
-    } else {
-      setTranslate(percentage)
-      setAudioDuration(0)
-      audio.currentTime = (xCoord / e.target.clientWidth) * audio.duration
+    const dragDivWidth = document.getElementById("dragDiv").clientWidth
+    const percentage = (xCoord / dragDivWidth) * 100
+
+    const setToPercentage = (percentage) => {
+      if (draggedRef.current === document.getElementById("endMarker")) {
+        setTranslateEnd(percentage)
+      } else {
+        setTranslate(percentage)
+        setAudioDuration(0)
+        audio.currentTime = (xCoord / e.target.clientWidth) * audio.duration
+      }
     }
-    console.log(`Dropped at ${percentage}%, audio current time: ${audio.currentTime}`)
+    if (percentage > translateWidth) {
+      // set to max
+      setToPercentage(translateWidth)
+      console.log("Invalid drop area")
+    } else if (percentage < 0) {
+      // set to min
+      setToPercentage(0)
+      console.log("Invalid drop area")
+    } else {
+      setToPercentage(percentage)
+    }
+    console.log(`Dropped at ${roundToDecimal(percentage, 2)}% with xCoord: ${roundToDecimal(xCoord, 2)}, audio current time: ${audio.currentTime}`)
     } 
 
   const handleSave = () => {
@@ -104,25 +144,22 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
     })
     dispatch(setNotification(`Saved audio time: ${start} - ${end}`))
     setShowEdit(false)
+    setTranslateStart(translate)
   }
 
-  /*
-  const DraggableSlider = ({ translate, transitionLen, handleDragStart = () => console.log("Drag started") }) => {
-    console.log("rerendered slider", translate, transitionLen);
-    
-    return (
-      <div style={{translate: `${translate}%` , transition: `${transitionLen}s linear`, fontSize: fontSize }} onDragStart={handleDragStart} draggable="true">&#10061;</div>
-    )
+  const resetTranslates = () => {
+    setTranslate(0)
+    setTranslateStart(0)
+    setTranslateEnd(translateWidth)
+    setAudioDuration(0)
+    audioRef.current.currentTime = 0
   }
-    */
-
 
   return (
     <div id="editAudioDiv">
-      <Button variant="primary" onClick={handlePlay}>Increase transform</Button>
       <div style={{ marginTop: 10 }}>
         <div style={{ width: `${translate}%`, transition: `${audioDuration}s linear`, height: '10px', backgroundColor: 'blue' }} />
-        <div style={{ width: "100%", minHeight: `${fontSize}px` }} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
+        <div id={"dragDiv"} style={{ width: `${translateWidth}%`, minHeight: `${fontSize}px` }} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop}>
           <div style={{ translate: `${translate}%`, transition: `${audioDuration}s linear`, fontSize: fontSize, position: "absolute", width: `100%` }} 
             onDragStart={handleDragStart} 
             draggable="true"
@@ -133,9 +170,13 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
             id="endMarker">&#10061;</div>
         </div>
       </div>
-      <Button variant="secondary" onClick={handlePause}>Pause</Button>
-      <Button variant="secondary" onClick={handleSave}>Save Changes</Button>
-      <span id="tracktime">0</span>
+      <div style={{display: "flex", justifyContent: "space-between", paddingTop: "10px", columnGap: "10px"}}>
+        <Button variant="primary" onClick={handlePlay}>Play audio</Button>
+        <Button variant="secondary" onClick={handlePause}>Pause</Button>
+        <span id="tracktime">0</span>
+        <Button variant="secondary" onClick={resetTranslates}>Reset</Button>
+        <Button variant="secondary" onClick={handleSave}>Save Changes</Button>
+      </div>
     </div>
   )
 }
