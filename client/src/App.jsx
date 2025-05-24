@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import EntryList from "./components/EntryList";
 import LoginForm from "./components/LoginForm";
+import Home from "./components/Home";
 import Notification from "./components/Notification";
 import UserList from "./components/UserList";
 import Navigation from "./components/Navigation"
@@ -25,15 +26,6 @@ const App = () => {
     dispatch(initializeAllUsers());
   }, []);
 
-  const Home = () => {
-    return (
-      <div>
-        <LoginForm />
-        {user && <p>Home stuff coming here</p>}
-      </div>
-    )
-  }
-
   const Entries = () => {
     return (
       <div>
@@ -55,7 +47,7 @@ const App = () => {
       <Navigation />
       <h1>Excuse Me Soundboard (coming soon)</h1>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={user ? <Home /> : <LoginForm/>} />
         <Route path="/users" element={user ? <UserList /> : <p>Log in to view Users</p>}/>
         <Route path="/entries" element={user ? <Entries/> : <p>Log in to view Entries</p>} />
         <Route path="/search" element={user ? <Search /> : <p>Log in to Search</p>} />

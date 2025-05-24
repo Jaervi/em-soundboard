@@ -35,6 +35,11 @@ const ListEntry = ({ id, author, description, audio, user = {username: "unknown"
     dispatch(deleteEntry({ id, audio }));
   };
 
+  const handleUpdate = (event) => {
+    event.preventDefault();
+    console.log("Implement update functionality");
+  }
+
   return (
     <Card style={{ width: '24rem', padding: '0.25rem', marginBottom: '0.25rem'}}>
       <Card.Body>
@@ -45,7 +50,12 @@ const ListEntry = ({ id, author, description, audio, user = {username: "unknown"
         {stats && <Card.Text>Likes: {stats.likes}, Downloads: {stats.downloads}</Card.Text>}
         <Button variant="success" onClick={handleLike} style={{ marginBottom: '0.25rem'}}>Like</Button>
         <AudioPlayer audioName={audio} handleDownload={handleDownload}/>
-        {(currentUser.username === user.username || currentUser.admin) && <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>}
+        {(currentUser.username === user.username || currentUser.admin) &&
+        <div>
+          <Button size="sm" onClick={handleUpdate} style={{ marginRight: '0.25rem', background: 'grey'}}>Update</Button>
+          <Button variant="danger" size="sm" onClick={removeEntry}>Delete the entry</Button>
+        </div>
+        }
       </Card.Body>
     </Card>
   );
