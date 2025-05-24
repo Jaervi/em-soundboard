@@ -64,7 +64,7 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
     }
 
     const timeUpdateListener = () => {
-      console.log(`Time: ${audio.currentTime}, condition: ${audio.currentTime > translateToAudio(translateEnd, audio.duration)}, translateEnd: ${translateEnd}`)
+      console.log(`Time: ${audio.currentTime}, translate: ${audioToTranslate(audio.currentTime, audio.duration)}, condition: ${audio.currentTime > translateToAudio(translateEnd, audio.duration)}, translateEnd: ${translateEnd}`)
       updateAudioTimes(audio)
       if (audio.currentTime > translateToAudio(translateEnd, audio.duration)) {
         audio.pause()
@@ -82,10 +82,11 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
       audio.removeEventListener("pause", pauseListener)
       audio.removeEventListener("timeupdate", timeUpdateListener)
     }
-  }, [file, translateEnd])
+  }, [file, translateEnd, translateStart])
   
 
   const handlePlay = () => {
+    handleSave(true)
     const audio = audioRef.current
     console.log(audioDuration, `Audio duration ${audio.duration}, current time ${audio.currentTime}`)
     setAudioDuration(Number(translateToAudio(translateEnd, audio.duration) - audio.currentTime))
@@ -113,11 +114,19 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
 
     const setToPercentage = (percentage) => {
       if (draggedRef.current === document.getElementById("endMarker")) {
+        if (percentage < translate) {
+          console.log("Cannot set end marker before start marker")
+          return
+        }
         setTranslateEnd(percentage)
       } else {
+        if (percentage > translateEnd) {
+          console.log("Cannot set start marker after end marker")
+          return
+        }
         setTranslate(percentage)
         setAudioDuration(0)
-        audio.currentTime = (xCoord / e.target.clientWidth) * audio.duration
+        audio.currentTime = translateToAudio(percentage, audio.duration)
       }
     }
     if (percentage > translateWidth) {
@@ -132,19 +141,22 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
       setToPercentage(percentage)
     }
     console.log(`Dropped at ${roundToDecimal(percentage, 2)}% with xCoord: ${roundToDecimal(xCoord, 2)}, audio current time: ${audio.currentTime}`)
+    //console.log(`AUDIO TO TRANSLATE: ${audioToTranslate(audio.currentTime, audio.duration)}, TRANSLATE TO AUDIO: ${translateToAudio(percentage, audio.duration)}`);
     } 
 
-  const handleSave = () => {
+  const handleSave = (show) => {
     const audio = audioRef.current
-    const start = roundToDecimal(translateToAudio(translate, audio.duration), 2)
+    console.log(`Saving audio time: ${audio.currentTime}, translate: ${translate}, translateEnd: ${translateEnd}`)
+    const start = roundToDecimal(audio.currentTime, 2)
     const end = roundToDecimal(translateToAudio(translateEnd, audio.duration), 2)
     setAudioTime({
       start: start,
       end: end
     })
     dispatch(setNotification(`Saved audio time: ${start} - ${end}`))
-    setShowEdit(false)
+    setShowEdit(show)
     setTranslateStart(translate)
+    console.log(`Translate start set to: ${translate}`)
   }
 
   const resetTranslates = () => {
@@ -175,7 +187,7 @@ const AudioEditor = ({file, posX = 0, audioTime, setAudioTime, setShowEdit}) => 
         <Button variant="secondary" onClick={handlePause}>Pause</Button>
         <span id="tracktime">0</span>
         <Button variant="secondary" onClick={resetTranslates}>Reset</Button>
-        <Button variant="secondary" onClick={handleSave}>Save Changes</Button>
+        <Button variant="secondary" onClick={() => handleSave(false)}>Save Changes</Button>
       </div>
     </div>
   )
